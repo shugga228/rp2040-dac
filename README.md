@@ -102,7 +102,7 @@ As a result, the scope grew: song/metadata handling, album art, a settings menu,
 | Middle | GND |
 | Top | EN |
 
-> **Note on button mapping:** the firmware (`main.py`) assigns UP/DOWN/PLAY/PREV/NEXT/MODE to specific GPIOs, which in turn correspond to specific Feather pin labels (confirmed against the Adalogger's pinout). Cross-referencing the wiring above against the firmware's `PIN_BTN_*` constants shows that the physical switch legs don't currently line up 1:1 with their printed direction - e.g. the leg wired to SDA drives the firmware's "Play/Select" action rather than "Up," and the center leg (D12) drives "Next" rather than "Select." This isn't necessarily wrong, but worth double-checking against your PCB silkscreen before final assembly - either the wiring or the `btn_map` tuple in `main.py` can be adjusted to match your intended layout.
+> **Note on button mapping:** the firmware (`code.py`) assigns UP/DOWN/PLAY/PREV/NEXT/MODE to specific GPIOs, which in turn correspond to specific Feather pin labels (confirmed against the Adalogger's pinout). Cross-referencing the wiring above against the firmware's `PIN_BTN_*` constants shows that the physical switch legs don't currently line up 1:1 with their printed direction - e.g. the leg wired to SDA drives the firmware's "Play/Select" action rather than "Up," and the center leg (D12) drives "Next" rather than "Select." This isn't necessarily wrong, but worth double-checking against your PCB silkscreen before final assembly - either the wiring or the `btn_map` tuple in `code.py` can be adjusted to match your intended layout.
 
 ### PCB Notes
 
@@ -130,7 +130,7 @@ The companion app creates these automatically during a sync if they don't alread
 
 The project has two components: firmware that runs on the device, and a desktop companion app that prepares assets and deploys them to the device.
 
-### 1. Device Runtime (`main.py`)
+### 1. Device Runtime (`code.py`)
 
 Runs on the RP2040 under CircuitPython.
 
@@ -164,8 +164,8 @@ Runs on a computer as a build/deploy step. Automates everything that the RP2040 
 - Converts album art via `Pillow`: center-crops to square, resizes to a fixed resolution, and packs it into RGB565 `.raw` format matching the display's native pixel format
 - Auto-detects the `CIRCUITPY` drive and an SD card drive (by volume label or by folder-content matching for `music`/`album_art`) - automatic detection is Windows-only; manual folder selection works on any OS
 - Two sync modes:
-  - **Full Sync** - converts and copies all audio/art, regenerates the on-device song table, and writes it into `main.py` on the `CIRCUITPY` drive
-  - **Settings Only** - patches volume/mode/color constants directly into `main.py` without touching songs or requiring re-conversion
+  - **Full Sync** - converts and copies all audio/art, regenerates the on-device song table, and writes it into `code.py` on the `CIRCUITPY` drive
+  - **Settings Only** - patches volume/mode/color constants directly into `code.py` without touching songs or requiring re-conversion
 - Runs all conversion/copy work on a background thread with live log and progress feedback in the GUI
 
 ## Memory & Performance Optimizations
@@ -195,9 +195,9 @@ The Feather RP2040 Adalogger ships with CircuitPython support via a UF2 bootload
    - Release BOOT once connected. The board will appear as a USB mass storage drive named `RPI-RP2`.
 3. Drag and drop the downloaded `.uf2` file onto the `RPI-RP2` drive.
 4. The board will automatically reboot and re-mount as a `CIRCUITPY` drive. This confirms CircuitPython is installed and ready.
-5. Copy the required CircuitPython libraries (see below) and `main.py` onto the `CIRCUITPY` drive.
+5. Copy the required CircuitPython libraries (see below) and `code.py` onto the `CIRCUITPY` drive.
 
-> Re-flashing a UF2 only replaces the CircuitPython firmware itself; it does not erase files already on the `CIRCUITPY` drive, but it's still good practice to back up `main.py` and any libraries before updating.
+> Re-flashing a UF2 only replaces the CircuitPython firmware itself; it does not erase files already on the `CIRCUITPY` drive, but it's still good practice to back up `code.py` and any libraries before updating.
 
 ### Requirements - Device
 
@@ -217,7 +217,7 @@ The Feather RP2040 Adalogger ships with CircuitPython support via a UF2 bootload
 
 ### Basic Workflow
 
-1. Flash CircuitPython onto the board (see [Flashing CircuitPython](#flashing-circuitpython-uf2)) and copy `main.py` and the required libraries to the `CIRCUITPY` drive.
+1. Flash CircuitPython onto the board (see [Flashing CircuitPython](#flashing-circuitpython-uf2)) and copy `code.py` and the required libraries to the `CIRCUITPY` drive.
 2. Insert an SD card with `/music` and `/album_art` folders into the Adalogger's onboard slot.
 3. Connect the device via USB and launch the companion app.
 4. Select your MP3 source folder, confirm the detected (or manually browsed) `CIRCUITPY` and SD drives.
